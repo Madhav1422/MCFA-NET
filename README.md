@@ -478,6 +478,4 @@ If this framework is used in academic work, please cite the associated manuscrip
 
 ---
 
-# License
 
-This project is intended for academic and research purposes.
