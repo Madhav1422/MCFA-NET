@@ -20,9 +20,7 @@ EfficientNet-B3 is employed as the backbone feature extractor.
 
 ---
 
-# Strict Novelty Assessment
-
-## Overall Novelty Level: HIGH
+#  Novelty Assessment
 
 From a strict SCIE-level evaluation perspective, the strongest novelty of MCFA-Net is not the use of EfficientNet, wavelets, FFTs, or prototype learning individually. The novelty arises from the structured interaction between:
 
