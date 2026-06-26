@@ -303,9 +303,33 @@ The code enables deterministic CUDA execution where supported to improve experim
 
 ---
 
+
+
 # Hardware
 
-Experiments were designed for GPU execution using CUDA-enabled NVIDIA GPUs. CPU execution is supported but will be considerably slower.
+Experiments were conducted on a Dell Alienware m16 laptop with:
+
+* GPU: NVIDIA GeForce RTX [4060] ([8] GB)
+* CPU: Intel Core [Intel Core Ultra 9 185H ]
+* RAM: [16] GB
+
+Addtional Support (HPC):
+
+* NVIDIA H200 GPUs (HPC cluster)
+
+
+
+Training was performed using CUDA-enabled PyTorch.
+
+---
+
+# Runtime
+
+The full experimental run (all models across all seeds) requires approximately 4 days on the specified hardware.
+
+Runtime may vary depending on GPU capability.
+
+A single model run (one seed) typically takes several hours.
 
 ---
 
@@ -314,22 +338,8 @@ Experiments were designed for GPU execution using CUDA-enabled NVIDIA GPUs. CPU 
 If you use this repository in your research, please cite the corresponding publication once available.
 
 ```
-@article{MCFANet2026,
-  title={MCFA-Net: Multi-scale Cross-domain Frequency-Aware Network for Brain Tumour Classification},
-  author={Anonymous},
-  journal={Under Review},
-  year={2026}
-}
-```
 
----
 
-# License
 
-This repository is intended for academic and research use. Please check the accompanying license file before redistribution or commercial use.
 
----
 
-# Disclaimer
-
-This software is intended for research purposes only and should not be used as a standalone clinical diagnostic system.
