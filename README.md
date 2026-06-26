@@ -1,349 +1,200 @@
-# MCFA-Net: Multi-scale Cross-domain Frequency-Aware Network
+# MCFA-Net: Multi-scale Cross-domain Frequency-Aware Network for Brain Tumour Classification
 
-## Overview
+MCFA-Net is a deep learning framework for multi-class brain tumour classification from MRI images. The framework is built upon **EfficientNet-B3** and integrates spatial and frequency-domain feature learning, adaptive multi-scale feature aggregation, and prototype-guided latent representation learning.
 
-MCFA-Net is a deep learning framework for brain tumour MRI classification that integrates cross-domain frequency-aware representation learning, adaptive multi-scale contextual aggregation, and prototype-conditioned latent representation modelling within a unified architecture.
-
-The framework is designed to address three major limitations commonly observed in medical image classification systems:
-
-1. Weak integration between spatial and frequency-domain evidence.
-2. Loss of contextual information across varying tumour scales.
-3. Poorly structured latent representations with limited class separability.
-
-The proposed framework incorporates three synergistic modules:
-
-* Dual-Domain Attention Fusion (DDAF)
-* Adaptive Multi-scale Pyramid Pooling (AMPP)
-* Hierarchical Prototype Contrastive Bottleneck (HPCB)
-
-EfficientNet-B3 is employed as the backbone feature extractor.
+The repository also includes complete ablation studies, statistical significance testing, Grad-CAM visualization, and publication-quality result generation.
 
 ---
 
-#  Novelty Assessment
+# Architecture
 
-From a strict SCIE-level evaluation perspective, the strongest novelty of MCFA-Net is not the use of EfficientNet, wavelets, FFTs, or prototype learning individually. The novelty arises from the structured interaction between:
-
-* frequency-aware fusion,
-* adaptive multi-scale contextual aggregation,
-* and prototype-conditioned variational latent modelling.
-
-The most scientifically significant contribution is the:
-
-> prototype-conditioned variational latent representation formulation within the HPCB module.
-
-This component moves beyond conventional feature engineering and attempts explicit latent space structuring using:
-
-* learnable class prototypes,
-* stochastic latent sampling,
-* contrastive prototype optimisation,
-* and similarity-guided contextual aggregation.
-
-This gives the framework stronger representation-learning depth than standard architectural medical imaging papers.
+```
+Input MRI
+     │
+     ▼
+EfficientNet-B3 Backbone
+     │
+     ▼
+Dual-Domain Attention Fusion (DDAF)
+     │
+     ▼
+Adaptive Multi-scale Pyramid Pooling (AMPP)
+     │
+     ▼
+Hierarchical Prototype Contrastive Bottleneck (HPCB)
+     │
+     ▼
+Classifier
+```
 
 ---
 
-# Main Contributions
+# Implemented Models
+
+The framework automatically trains the following models.
+
+| Model | Description |
+|--------|-------------|
+| EfficientNet_B3 | Baseline EfficientNet-B3 |
+| MCFA_no_DDAF | AMPP + HPCB only |
+| MCFA_no_HPCB | DDAF + AMPP only |
+| MCFA_no_AMPP | DDAF + HPCB only |
+| MCFA_Net_EfficientNet_B3 | Full proposed MCFA-Net |
+
+---
+
+# Main Components
 
 ## 1. Dual-Domain Attention Fusion (DDAF)
 
-The DDAF module integrates:
-
-* spatial-domain features,
-* wavelet-domain representations,
-* and Fourier-domain representations.
-
-Unlike fixed fusion mechanisms, DDAF employs a learnable input-aware gating strategy that dynamically weights spatial and frequency evidence.
-
-### Key Characteristics
-
-* Simultaneous spatial-frequency feature integration.
-* Learnable attention-based fusion.
-* Input-dependent feature weighting.
-* Wavelet + FFT complementary representation learning.
-
-### Scientific Importance
-
-Most existing medical image classification frameworks either:
-
-* operate only in the spatial domain, or
-* use frequency-domain processing as an auxiliary branch.
-
-MCFA-Net instead performs adaptive cross-domain evidence fusion.
+- Spatial feature extraction using EfficientNet-B3
+- Frequency representation using:
+  - Haar Wavelet decomposition
+  - FFT magnitude spectrum
+- Learnable attention gate
+- Dynamic fusion of spatial and frequency features
 
 ---
 
 ## 2. Adaptive Multi-scale Pyramid Pooling (AMPP)
 
-The AMPP module captures tumour characteristics across multiple spatial scales using:
+Extracts contextual information at multiple spatial scales.
 
-* 1×1 pooling,
-* 2×2 pooling,
-* 3×3 pooling,
-* and 6×6 pooling.
+Pooling scales:
 
-An attention-based weighting mechanism dynamically determines which spatial scale contributes most strongly for a given sample.
+- 1 × 1
+- 2 × 2
+- 3 × 3
+- 6 × 6
 
-### Key Characteristics
-
-* Adaptive multi-scale contextual aggregation.
-* Input-aware scale weighting.
-* Dynamic pooling importance estimation.
-* Improved tumour size and location sensitivity.
-
-### Scientific Importance
-
-Conventional global average pooling discards scale-specific contextual information.
-AMPP attempts to preserve discriminative spatial structure through adaptive scale selection.
+A learnable attention mechanism dynamically weights each scale.
 
 ---
 
 ## 3. Hierarchical Prototype Contrastive Bottleneck (HPCB)
 
-The HPCB module is the core novelty of MCFA-Net.
+The bottleneck consists of
 
-The module introduces:
+- learnable class prototypes
+- prototype-aware latent encoding
+- variational latent sampling
+- prototype contrastive learning
 
-* learnable class prototypes,
-* prototype similarity estimation,
-* variational latent sampling,
-* and contrastive latent optimisation.
+Loss components include
 
-The latent distribution is conditioned using prototype-guided contextual aggregation.
-
-### Key Characteristics
-
-* Prototype-conditioned latent representation learning.
-* Variational bottleneck formulation.
-* Structured latent space organisation.
-* Intra-class compactness enhancement.
-* Inter-class separability improvement.
-* Prototype-guided stochastic sampling.
-
-### Scientific Importance
-
-Most prototype-learning methods use deterministic embeddings.
-Most variational bottleneck methods lack explicit class structure.
-
-MCFA-Net combines:
-
-* prototype learning,
-* contrastive learning,
-* and variational inference
-
-within a unified latent representation framework.
-
-This is the primary source of conceptual novelty in the proposed architecture.
+- Cross-Entropy Loss
+- KL Divergence
+- Prototype Contrastive Loss
 
 ---
 
-# Architecture Pipeline
+# Training Configuration
 
-Input MRI
-→ EfficientNet-B3 Backbone
-→ DDAF (Spatial + Frequency Fusion)
-→ AMPP (Adaptive Multi-scale Aggregation)
-→ HPCB (Prototype-conditioned Variational Bottleneck)
-→ Classification Head
-
----
-
-# Ablation Models
-
-The framework includes three ablation variants:
-
-| Model        | Purpose                                                    |
-| ------------ | ---------------------------------------------------------- |
-| MCFA_no_DDAF | Evaluates AMPP + HPCB without frequency-aware fusion       |
-| MCFA_no_HPCB | Evaluates DDAF + AMPP without prototype bottleneck         |
-| MCFA_no_AMPP | Evaluates DDAF + HPCB without adaptive multi-scale pooling |
-
-These ablations isolate the contribution of each proposed component.
+| Parameter | Value |
+|------------|-------|
+| Backbone | EfficientNet-B3 |
+| Image Size | 224 × 224 |
+| Optimizer | AdamW |
+| Learning Rate | 1e-4 |
+| Batch Size | 16 |
+| Epochs | 60 |
+| Early Stopping | 12 epochs |
+| Latent Dimension | 512 |
+| Prototype Dimension | 256 |
+| Label Smoothing | 0.10 |
+| MixUp Alpha | 0.4 |
+| Random Seeds | 42–47 |
 
 ---
 
-# Dataset Organisation and Alignment
+# Data Augmentation
 
-## Dataset Structure
+Training images undergo
 
-Organise the dataset exactly as follows:
+- Random Resized Crop
+- Horizontal Flip
+- Vertical Flip
+- Random Rotation
+- Color Jitter
+- Random Grayscale
+- ImageNet Normalization
 
-```text
-Training/
-    glioma/
+Validation and testing use deterministic resizing and normalization.
+
+---
+
+# Dataset Structure
+
+```
+Training/         (Kaggle training directory acquired from - https://www.kaggle.com/datasets/mohamadabouali1/mri-brain-tumor-dataset-4-class-7023-images )
+    Glioma/
     meningioma/
     pituitary/
-    notumor/
+    no tumor/
 
-Test/
-    glioma/
+Test/         (Mendeley testing directory acquired from- https://data.mendeley.com/datasets/zwr4ntf94j/1 )
+    Glioma/  
     meningioma/
     pituitary/
-    notumor/
+    no tumor/
 ```
 
-This folder alignment is mandatory for compatibility with the PyTorch ImageFolder pipeline used in MCFA-Net.
+Update the following paths before training:
 
-Each subdirectory corresponds to a single tumour category, and all MRI images belonging to that category must be stored within the associated folder.
-
-This alignment ensures:
-
-* deterministic class indexing,
-* label consistency across training and testing,
-* reproducible category mapping,
-* and stratified sampling compatibility.
+```python
+TRAIN_PATH = "path/to/Training/"
+TEST_PATH  = "path/to/Test/"
+```
 
 ---
 
-## Data Alignment and Preprocessing
+# Installation
 
-All MRI images are aligned into a unified processing pipeline prior to training.
+Install the required packages.
 
-### Image Standardisation
-
-All images are:
-
-* converted to RGB format,
-* resized to 224 × 224 pixels,
-* normalised using ImageNet statistics,
-* and processed using identical augmentation pipelines.
-
-### Training Augmentation Pipeline
-
-The training set includes:
-
-* random resized cropping,
-* horizontal flipping,
-* vertical flipping,
-* random rotation,
-* colour jittering,
-* grayscale augmentation,
-* and Mixup regularisation.
-
-### Validation and Testing Alignment
-
-Validation and testing images are processed using deterministic resizing and normalisation without stochastic augmentation.
-
-This prevents train-test leakage and ensures fair evaluation.
+```bash
+pip install torch torchvision timm
+pip install PyWavelets
+pip install numpy pandas scipy
+pip install matplotlib seaborn
+pip install scikit-learn
+```
 
 ---
 
-## Stratified Dataset Splitting
+# Running the Code
 
-The training dataset is further divided into:
+Simply execute
 
-* training subset,
-* and validation subset
+```bash
+python MCFA_Net_main.py
+```
 
-using stratified sampling.
+The script automatically
 
-This ensures:
-
-* balanced class distribution,
-* reduced sampling bias,
-* and statistically consistent evaluation across seeds.
-
-Independent runs are performed using six random seeds:
-
-42, 43, 44, 45, 46, and 47.
-
-This multi-seed alignment improves reproducibility and robustness assessment.
+- trains all models
+- evaluates each model
+- performs six independent runs
+- generates Grad-CAM visualizations
+- computes statistical significance tests
+- exports publication-quality figures
 
 ---
 
-# Experimental Setup
+# Output Directory
 
-## Hardware
-
-* Dell Alienware m16
-* Intel Core Ultra 9 185H
-* NVIDIA RTX 4060 (8 GB VRAM)
-* 16 GB RAM
-* Additional experiments on NVIDIA H200 HPC GPUs
-
-## Software
-
-* Python 3.10
-* PyTorch
-* Torchvision
-* timm
-* NumPy
-* pandas
-* SciPy
-* scikit-learn
-* PyWavelets
-* matplotlib
-* seaborn
-
-## Training Configuration
-
-| Parameter       | Value                         |
-| --------------- | ----------------------------- |
-| Image Size      | 224 × 224                     |
-| Batch Size      | 16                            |
-| Optimizer       | AdamW                         |
-| Learning Rate   | 1 × 10⁻⁴                      |
-| Weight Decay    | 1 × 10⁻²                      |
-| Epochs          | 60                            |
-| Early Stopping  | 12 epochs                     |
-| Scheduler       | Cosine Annealing Warm Restart |
-| Label Smoothing | 0.10                          |
-| Mixup Alpha     | 0.4                           |
-
----
-
-# Statistical Validation
-
-The framework includes rigorous statistical evaluation across six independent runs.
-
-## Statistical Methods
-
-* Wilcoxon Signed-Rank Test
-* McNemar Test
-* Cohen’s d Effect Size Analysis
-
-## Purpose
-
-These analyses evaluate:
-
-* statistical significance,
-* prediction consistency,
-* robustness across seeds,
-* and practical effect magnitude.
-
-This substantially strengthens scientific validity compared with single-run reporting.
-
----
-
-# Output Directory Structure
-
-All experimental outputs are automatically organised into structured directories for reproducibility, statistical analysis, and publication-ready visualisation generation.
-
-The outputs are saved as follows:
-
-```text
+```
 MCFA_Net_RESULTS_2026_final_imp/
-│
+
 ├── EfficientNet_B3/
+│   ├── metrics/
+│   ├── curves/
+│   └── gradcam/
+│
 ├── MCFA_no_DDAF/
 ├── MCFA_no_HPCB/
 ├── MCFA_no_AMPP/
 ├── MCFA_Net_EfficientNet_B3/
-│
-│   ├── metrics/
-│   │   ├── test_metrics_seedXX.csv
-│   │   ├── cm_seedXX.csv
-│   │   ├── roc_data_seedXX.csv
-│   │   └── history_seedXX.csv
-│   │
-│   ├── curves/
-│   │   └── curves_seedXX.png
-│   │
-│   └── gradcam/
-│       ├── glioma/
-│       ├── meningioma/
-│       ├── pituitary/
-│       └── notumor/
 │
 ├── all_results.csv
 ├── summary_aggregated.csv
@@ -362,120 +213,123 @@ MCFA_Net_RESULTS_2026_final_imp/
 └── mcnemar_pvalue_heatmap.png
 ```
 
-## Output Alignment Description
+---
 
-### metrics/
+# Evaluation Metrics
 
-Stores:
+The framework reports
 
-* classification metrics,
-* confusion matrices,
-* ROC curve numerical values,
-* and training history logs.
-
-### curves/
-
-Stores publication-quality:
-
-* loss curves,
-* and accuracy curves.
-
-### gradcam/
-
-Stores GradCAM explainability visualisations organised class-wise.
-
-Each GradCAM image is saved according to:
-
-* tumour category,
-* seed number,
-* and image index.
-
-### Root-Level Statistical Files
-
-The root directory stores:
-
-* Wilcoxon signed-rank statistical analysis,
-* pooled McNemar statistical testing,
-* Cohen’s d effect size comparisons,
-* ablation summaries,
-* and superiority analysis tables.
-
-This structured output alignment improves:
-
-* reproducibility,
-* traceability,
-* experimental transparency,
-* and manuscript preparation.
+- Accuracy
+- Macro Precision
+- Macro Recall
+- Macro F1-score
+- Macro AUC
+- Confusion Matrix
+- ROC Curves
+- Classification Report
 
 ---
 
-# Outputs
+# Statistical Analysis
 
-The implementation generates:
+The repository includes automated statistical evaluation.
 
-* confusion matrices,
-* ROC curves,
-* GradCAM visualisations,
-* statistical comparison tables,
-* effect size heatmaps,
-* and ablation analysis reports.
+## Wilcoxon Signed-Rank Test
 
----
+Performed across six independent random seeds.
 
-# Strengths
+Outputs
 
-## Major Strengths
-
-* Strong representation-learning formulation.
-* Cross-domain spatial-frequency modelling.
-* Structured latent space optimisation.
-* Comprehensive ablation analysis.
-* Multi-run statistical validation.
-* Large effect size reporting.
-* Explainability using GradCAM.
+```
+wilcoxon_n6.csv
+```
 
 ---
 
-# Limitations
+## McNemar Test
 
-## Strict Reviewer-Level Limitations
+Performed using pooled predictions across all seeds.
 
-The following concerns may still be raised by strict reviewers:
+Outputs
 
-1. The framework is architecturally complex.
-2. Computational overhead may be higher than lightweight baselines.
-3. Theoretical justification of prototype-conditioned variational sampling must be mathematically rigorous.
-4. External dataset generalisation should be validated.
-5. Clinical interpretability remains limited.
-6. Multi-centre robustness is not yet demonstrated.
-
-These limitations should be acknowledged transparently in publication.
+```
+mcnemar_pooled.csv
+```
 
 ---
 
-# Strict SCIE-Level Positioning
+## Effect Size
 
-MCFA-Net should be positioned as:
+Cohen's d is computed for pairwise model comparisons.
 
-> a structured latent representation learning framework for medical image classification.
+Outputs
 
-It should NOT be framed merely as:
+```
+cohens_d_heatmap.png
+```
 
-* another hybrid CNN architecture,
-* or a simple frequency-enhanced EfficientNet variant.
+---
 
-The strongest scientific contribution is:
+# Visualization
 
-> prototype-conditioned variational latent organisation.
+The repository automatically generates
 
-This is the conceptual identity of the work.
+- Training curves
+- Validation curves
+- Confusion matrices
+- ROC curves
+- Grad-CAM heatmaps
+- Metric boxplots
+- Mean ± standard deviation bar plots
+- McNemar significance heatmaps
+- Cohen's d heatmaps
+
+---
+
+# Reproducibility
+
+The experiments use fixed random seeds
+
+```
+42
+43
+44
+45
+46
+47
+```
+
+The code enables deterministic CUDA execution where supported to improve experimental reproducibility.
+
+---
+
+# Hardware
+
+Experiments were designed for GPU execution using CUDA-enabled NVIDIA GPUs. CPU execution is supported but will be considerably slower.
 
 ---
 
 # Citation
 
-If this framework is used in academic work, please cite the associated manuscript.
+If you use this repository in your research, please cite the corresponding publication once available.
+
+```
+@article{MCFANet2026,
+  title={MCFA-Net: Multi-scale Cross-domain Frequency-Aware Network for Brain Tumour Classification},
+  author={Anonymous},
+  journal={Under Review},
+  year={2026}
+}
+```
 
 ---
 
+# License
 
+This repository is intended for academic and research use. Please check the accompanying license file before redistribution or commercial use.
+
+---
+
+# Disclaimer
+
+This software is intended for research purposes only and should not be used as a standalone clinical diagnostic system.
