@@ -21,7 +21,7 @@ Dual-Domain Attention Fusion (DDAF)
 Adaptive Multi-scale Pyramid Pooling (AMPP)
      │
      ▼
-Hierarchical Prototype Contrastive Bottleneck (HPCB)
+Hybrid Prototype Contrastive Bottleneck (HPCB)
      │
      ▼
 Classifier
@@ -71,7 +71,7 @@ A learnable attention mechanism dynamically weights each scale.
 
 ---
 
-## 3. Hierarchical Prototype Contrastive Bottleneck (HPCB)
+## 3. Hybrid Prototype Contrastive Bottleneck (HPCB)
 
 The bottleneck consists of
 
