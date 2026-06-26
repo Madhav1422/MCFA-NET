@@ -1,4 +1,4 @@
-# MCFA-Net: Multi-scale Cross-domain Frequency-Aware Network for Brain Tumour Classification
+# MCFA-Net: A Prototype-Conditioned Variational Contrastive Bottleneck with Cross-Domain Frequency-Aware Fusion for Brain Tumour Classification
 
 MCFA-Net is a deep learning framework for multi-class brain tumour classification from MRI images. The framework is built upon **EfficientNet-B3** and integrates spatial and frequency-domain feature learning, adaptive multi-scale feature aggregation, and prototype-guided latent representation learning.
 
